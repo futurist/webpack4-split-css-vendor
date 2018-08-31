@@ -53,18 +53,16 @@ const config = {
     splitChunks: {
       minSize: 0,
       cacheGroups: {
-        styles: {
-          name: 'app',
-          test: /\.css$/,
-          chunks: 'all',
-          enforce: true,
-          priority: 10
-        },
         commons: {
           // test: module =>
           //   /[\\/]node_modules[\\/]/.test(module.resource) &&
           //   module.constructor.name !== 'CssModule',
-          test: /[\\/]node_modules[\\/]/,
+          // test: /[\\/]node_modules[\\/]/,
+          test (chunks) {
+            // splitChunks will generate another CSS bundle from node_modules, so have to exclude them!
+            const {userRequest} = chunks;
+            return /[\\/]node_modules[\\/]/i.test(userRequest) && !/\.(less|css)$/i.test(userRequest);
+          },
           name: 'vendor',
           chunks: 'all'
         }
